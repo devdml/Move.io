@@ -1,7 +1,4 @@
 using Lean.Pool;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -43,9 +40,13 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer(CacheString.LAYER_CHARACTER))
         {
             Character ca = other.GetComponent<Character>();
-            ca.isDead = true;
-            character.listTarget.Remove(character.target);
-            character.target = null;
+            if (ca != null)
+            {
+                ca.isHit = true;
+                character.listTarget.Remove(character.target);
+                character.target = null;
+                LeanPool.Despawn(this);
+            }  
         }
     }
 }

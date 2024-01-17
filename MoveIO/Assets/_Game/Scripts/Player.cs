@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : Character
@@ -8,14 +6,14 @@ public class Player : Character
     [SerializeField] private Rigidbody rb;
     [SerializeField] private int moveSpeed;
 
-    private bool isMove;
+    public bool isMove;
 
     protected override void Update()
     {
         base.Update();
         Joystick();
 
-        if (isMove != true && target != null)
+        if (isMove == false && target != null)
         {
             RotateToTarget();
             Attack();

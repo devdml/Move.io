@@ -147,5 +147,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 6416322822738910906}
-  speed: 10
-  dir: {x: 0, y: 0, z: 0}
+  speed: 6
+  character: {fileID: 0}

@@ -13,12 +13,21 @@ public class Character : MonoBehaviour
     [SerializeField] private Animator anim;
 
     private Vector3 dir;
-    private string currentAnimName = CacheString.ANIM_IDLE;
+
+    protected string currentAnimName = CacheString.ANIM_IDLE;
 
     public List<GameObject> listTarget = new List<GameObject>();
+    public GameObject target;
+
+    [Header("Bool")]
     public bool isAttack = false;
     public bool isDead = false;
-    public GameObject target;
+    public bool isHit = false;
+
+    protected virtual void Start()
+    {
+        init();
+    }
 
     protected virtual void Update()
     {
@@ -26,18 +35,28 @@ public class Character : MonoBehaviour
         {
             FindClosestTarget();
         }
+
+        if (listTarget.Count == 0)
+        {
+            target = null;
+        }
     }
 
     //Private
 
+    private void init()
+    {
+        isAttack = true;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer(CacheString.LAYER_CHARACTER))
-        {     
-            listTarget.Add(other.gameObject);
-            if (target == null)
+        {
+            Character character = other.gameObject.GetComponent<Character>();
+            if (character.isDead == false)
             {
-                isAttack = true;
+                listTarget.Add(other.gameObject);
             }
         }
     }
@@ -74,6 +93,7 @@ public class Character : MonoBehaviour
 
     private void Shooting()
     {
+        if (isDead == true) return;
         if (target != null)
         {
             dir = target.transform.position - transform.position;
@@ -85,23 +105,24 @@ public class Character : MonoBehaviour
 
         bulletSpwan.SeekAttacker(this);
 
-        bulletSpwan.OnDespawn(1.5f);
+        bulletSpwan.OnDespawn(1f);
     }
 
     //protected
     protected IEnumerator DelayShoot()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
         Shooting();
-        ChangeAnim(CacheString.ANIM_ATTACK);
     }
 
     //Public
+
     public void Attack()
     {
         if (isAttack == false) return;
         isAttack = false;
         StartCoroutine(nameof(DelayShoot));
+        ChangeAnim(CacheString.ANIM_ATTACK);
         Invoke(nameof(ResetAttack), timeDelay);
     }
 
@@ -109,11 +130,6 @@ public class Character : MonoBehaviour
     {
         currentAnimName = CacheString.ANIM_IDLE;
         isAttack = true;
-
-        if (target == null)
-        {
-            isAttack = false;
-        }
     }
 
 
